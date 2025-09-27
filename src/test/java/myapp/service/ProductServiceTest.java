@@ -74,11 +74,12 @@ public class ProductServiceTest {
 
     // BEGIN TEST CASES - (with example for Titile)
     @Test
-    public void testTitleEquivalencePartitionTitle() {
-        //Valid case Title == 3 char
+    public void testProductTitle() {
+        // T1
+        // Valid case Title == 3 char
         Product productWithValidTitle = createProductSample(
             1L,
-            "NES",
+            "abc",
             null,
             null,
             1,
@@ -97,10 +98,34 @@ public class ProductServiceTest {
         Product savedProduct = productService.save(productWithValidTitle);
         assertEquals(productWithValidTitle, savedProduct);
 
-        //Invalid case Title < 3 char
+        // T2
+        // Valid case Title == 100 char
+        Product productWithValidTitle100 = createProductSample(
+            1L,
+            "a".repeat(100),
+            null,
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_valid2 = validator.validate(productWithValidTitle100);
+        // Assert
+        System.err.println(violations_valid2);
+        assertTrue(violations_valid2.isEmpty());
+        when(productRepository.save(productWithValidTitle100)).thenReturn(productWithValidTitle100);
+        Product savedProduct2 = productService.save(productWithValidTitle100);
+        assertEquals(productWithValidTitle100, savedProduct2);
+
+        // T3
+        // Invalid case Title < 3 char
         Product productWithTwoCharTitle = createProductSample(
             1L,
-            "NE",
+            "ab",
             null,
             null,
             1,
@@ -114,5 +139,157 @@ public class ProductServiceTest {
         Set<ConstraintViolation<Product>> violations_invalid = validator.validate(productWithTwoCharTitle);
         // Assert
         assertEquals("title", violations_invalid.iterator().next().getPropertyPath().toString());
+
+        // T4
+        // Invalid case Title > 101 char
+        Product productWithHugeTitle = createProductSample(
+            1L,
+            "a".repeat(101),
+            null,
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_invalid2 = validator.validate(productWithHugeTitle);
+        // Assert
+        assertEquals("title", violations_invalid2.iterator().next().getPropertyPath().toString());
+
+        // T5
+        // Invalid case Title is empty
+        Product productWithEmptyTitle = createProductSample(
+            1L,
+            "",
+            null,
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_invalid3 = validator.validate(productWithEmptyTitle);
+        // Assert
+        assertEquals("title", violations_invalid3.iterator().next().getPropertyPath().toString());
+    }
+
+    @Test
+    public void testKeyWords() {
+        // T6
+        // Valid case Keywords == null
+        Product productWithNullKeywords = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_valid = validator.validate(productWithNullKeywords);
+        // Assert
+        System.err.println(violations_valid);
+        assertTrue(violations_valid.isEmpty());
+        when(productRepository.save(productWithNullKeywords)).thenReturn(productWithNullKeywords);
+        Product savedProduct = productService.save(productWithNullKeywords);
+        assertEquals(productWithNullKeywords, savedProduct);
+
+        // T7
+        // Valid case Keywords == 0 char (empty)
+        Product productWithEmptyKeywords = createProductSample(
+            1L,
+            "Valid Title",
+            "",
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_valid2 = validator.validate(productWithEmptyKeywords);
+        // Assert
+        System.err.println(violations_valid2);
+        assertTrue(violations_valid2.isEmpty());
+        when(productRepository.save(productWithEmptyKeywords)).thenReturn(productWithEmptyKeywords);
+        Product savedProduct2 = productService.save(productWithEmptyKeywords);
+        assertEquals(productWithEmptyKeywords, savedProduct2);
+
+        // T8
+        // Valid case Keywords == 1 char
+        Product productWithOneCharKeywords = createProductSample(
+            1L,
+            "Valid Title",
+            "a",
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_valid3 = validator.validate(productWithOneCharKeywords);
+        // Assert
+        System.err.println(violations_valid3);
+        assertTrue(violations_valid3.isEmpty());
+        when(productRepository.save(productWithOneCharKeywords)).thenReturn(productWithOneCharKeywords);
+        Product savedProduct3 = productService.save(productWithOneCharKeywords);
+        assertEquals(productWithOneCharKeywords, savedProduct3);
+
+        // T9
+        // Valid case Keywords == 200 char
+        Product productWith200CharKeywords = createProductSample(
+            1L,
+            "Valid Title",
+            "a".repeat(200),
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_valid4 = validator.validate(productWith200CharKeywords);
+        // Assert
+        System.err.println(violations_valid4);
+        assertTrue(violations_valid4.isEmpty());
+        when(productRepository.save(productWith200CharKeywords)).thenReturn(productWith200CharKeywords);
+        Product savedProduct4 = productService.save(productWith200CharKeywords);
+        assertEquals(productWith200CharKeywords, savedProduct4);
+
+        // T10
+        // Invalid case Keywords > 200 char
+        Product productWithOver200CharKeywords = createProductSample(
+            1L,
+            "Valid Title",
+            "a".repeat(201),
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_invalid = validator.validate(productWithOver200CharKeywords);
+        // Assert
+        assertEquals("keywords", violations_invalid.iterator().next().getPropertyPath().toString());
     }
 }
