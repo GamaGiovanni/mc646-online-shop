@@ -48,7 +48,7 @@ public class ProductServiceTest {
         String title,
         String keywords,
         String description,
-        int rating,
+        Integer rating,
         int quantityInStock,
         String dimensions,
         BigDecimal price,
@@ -424,5 +424,301 @@ public class ProductServiceTest {
         Set<ConstraintViolation<Product>> violations_invalid2 = validator.validate(productWith1CharDescription);
         // Assert
         assertEquals("description", violations_invalid2.iterator().next().getPropertyPath().toString());
+    }
+
+    @Test
+    public void testRating() {
+        // T17
+        // Valid case Rating == null
+        Product productWithNoRating = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            null,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_valid = validator.validate(productWithNoRating);
+        // Assert
+        System.err.println(violations_valid);
+        assertTrue(violations_valid.isEmpty());
+        when(productRepository.save(productWithNoRating)).thenReturn(productWithNoRating);
+        Product savedProduct = productService.save(productWithNoRating);
+        assertEquals(productWithNoRating, savedProduct);
+
+        // T18
+        // Valid case Rating == 1
+        Product productWithRating1 = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_valid2 = validator.validate(productWithRating1);
+        // Assert
+        System.err.println(violations_valid2);
+        assertTrue(violations_valid2.isEmpty());
+        when(productRepository.save(productWithRating1)).thenReturn(productWithRating1);
+        Product savedProduct2 = productService.save(productWithRating1);
+        assertEquals(productWithRating1, savedProduct2);
+
+        // T19
+        // Valid case Rating == 10
+        Product productWithRating10 = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            10,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_valid3 = validator.validate(productWithRating10);
+        // Assert
+        System.err.println(violations_valid3);
+        assertTrue(violations_valid3.isEmpty());
+        when(productRepository.save(productWithRating10)).thenReturn(productWithRating10);
+        Product savedProduct3 = productService.save(productWithRating10);
+        assertEquals(productWithRating10, savedProduct3);
+
+        // T20
+        // Invalid case Rating == 0
+        Product productWithRating0 = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            0,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_invalid = validator.validate(productWithRating0);
+        // Assert
+        assertEquals("rating", violations_invalid.iterator().next().getPropertyPath().toString());
+
+        // T21
+        // Invalid case Rating == 11
+        Product productWithRating11 = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            11,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_invalid2 = validator.validate(productWithRating11);
+        // Assert
+        assertEquals("rating", violations_invalid2.iterator().next().getPropertyPath().toString());
+        // T22
+        // Invalid case Rating == 5.5
+        // This test case is not applicable in Java as price is of type BigDecimal
+
+        // T23
+        // Invalid case Rating == string
+        // This test case is not applicable in Java as rating is of type Integer
+    }
+
+    @Test
+    public void testPrice() {
+        // T24
+        // Valid case Price == 1
+        Product productWithPrice1 = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.valueOf(1),
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_valid = validator.validate(productWithPrice1);
+        // Assert
+        System.err.println(violations_valid);
+        assertTrue(violations_valid.isEmpty());
+        when(productRepository.save(productWithPrice1)).thenReturn(productWithPrice1);
+        Product savedProduct = productService.save(productWithPrice1);
+        assertEquals(productWithPrice1, savedProduct);
+
+        // T25
+        // Valid case Price == 2
+        Product productWithPrice2 = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.valueOf(2),
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_valid2 = validator.validate(productWithPrice2);
+        // Assert
+        System.err.println(violations_valid2);
+        assertTrue(violations_valid2.isEmpty());
+        when(productRepository.save(productWithPrice2)).thenReturn(productWithPrice2);
+        Product savedProduct2 = productService.save(productWithPrice2);
+        assertEquals(productWithPrice2, savedProduct2);
+
+        // T26
+        // Valid case Price == 9998
+        Product productWithPrice9998 = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.valueOf(9998),
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_valid3 = validator.validate(productWithPrice9998);
+        // Assert
+        System.err.println(violations_valid3);
+        assertTrue(violations_valid3.isEmpty());
+        when(productRepository.save(productWithPrice9998)).thenReturn(productWithPrice9998);
+        Product savedProduct3 = productService.save(productWithPrice9998);
+        assertEquals(productWithPrice9998, savedProduct3);
+
+        // T27
+        // Valid case Price == 9999
+        Product productWithPrice9999 = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.valueOf(9999),
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_valid4 = validator.validate(productWithPrice9999);
+        // Assert
+        System.err.println(violations_valid4);
+        assertTrue(violations_valid4.isEmpty());
+        when(productRepository.save(productWithPrice9999)).thenReturn(productWithPrice9999);
+        Product savedProduct4 = productService.save(productWithPrice9999);
+        assertEquals(productWithPrice9999, savedProduct4);
+
+        // T28
+        // Invalid case Price == 0.99
+        Product productWithPrice0_99 = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.valueOf(0.99),
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_invalid = validator.validate(productWithPrice0_99);
+        // Assert
+        System.err.println(violations_invalid);
+        assertEquals("price", violations_invalid.iterator().next().getPropertyPath().toString());
+
+        // T29
+        // Invalid case Price == 10000
+        Product productWithPrice10000 = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.valueOf(10000),
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_invalid2 = validator.validate(productWithPrice10000);
+        // Assert
+        System.err.println(violations_invalid2);
+        assertEquals("price", violations_invalid2.iterator().next().getPropertyPath().toString());
+
+        // T30
+        // Invalid case Price == -2
+        Product productWithPriceNegative = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.valueOf(-2),
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_invalid3 = validator.validate(productWithPriceNegative);
+        // Assert
+        System.err.println(violations_invalid3);
+        assertEquals("price", violations_invalid3.iterator().next().getPropertyPath().toString());
+
+        // T31
+        // Invalid case Price == string
+        // This test case is not applicable in Java as price is of type BigDecimal
+
+        // T32
+        // Invalid case Price == null
+        Product productWithPriceNull = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            1,
+            null,
+            null,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_invalid4 = validator.validate(productWithPriceNull);
+        // Assert
+        System.err.println(violations_invalid4);
+        assertEquals("price", violations_invalid4.iterator().next().getPropertyPath().toString());
     }
 }
