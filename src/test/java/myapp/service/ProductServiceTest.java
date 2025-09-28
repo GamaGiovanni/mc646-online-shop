@@ -49,7 +49,7 @@ public class ProductServiceTest {
         String keywords,
         String description,
         Integer rating,
-        int quantityInStock,
+        Integer quantityInStock,
         String dimensions,
         BigDecimal price,
         ProductStatus status,
@@ -720,5 +720,439 @@ public class ProductServiceTest {
         // Assert
         System.err.println(violations_invalid4);
         assertEquals("price", violations_invalid4.iterator().next().getPropertyPath().toString());
+    }
+
+    @Test
+    public void testQuantityInStock() {
+        // T33
+        // Valid case QuantityInStock == 0
+        Product productWithZeroQuantity = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            0,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_valid = validator.validate(productWithZeroQuantity);
+        // Assert
+        System.err.println(violations_valid);
+        assertTrue(violations_valid.isEmpty());
+        when(productRepository.save(productWithZeroQuantity)).thenReturn(productWithZeroQuantity);
+        Product savedProduct = productService.save(productWithZeroQuantity);
+        assertEquals(productWithZeroQuantity, savedProduct);
+
+        // T34
+        // Valid case QuantityInStock == 1
+        Product productWithOneQuantity = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_valid2 = validator.validate(productWithOneQuantity);
+        // Assert
+        System.err.println(violations_valid2);
+        assertTrue(violations_valid2.isEmpty());
+        when(productRepository.save(productWithOneQuantity)).thenReturn(productWithOneQuantity);
+        Product savedProduct2 = productService.save(productWithOneQuantity);
+        assertEquals(productWithOneQuantity, savedProduct2);
+
+        // T35
+        // Valid case QuantityInStock == 300
+        Product productWith300Quantity = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            300,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_valid3 = validator.validate(productWith300Quantity);
+        // Assert
+        System.err.println(violations_valid3);
+        assertTrue(violations_valid3.isEmpty());
+        when(productRepository.save(productWith300Quantity)).thenReturn(productWith300Quantity);
+        Product savedProduct3 = productService.save(productWith300Quantity);
+        assertEquals(productWith300Quantity, savedProduct3);
+
+        // T36
+        // Invalid case QuantityInStock == -1
+        Product productWithNegativeQuantity = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            -1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_invalid = validator.validate(productWithNegativeQuantity);
+        // Assert
+        System.err.println(violations_invalid);
+        assertEquals("quantityInStock", violations_invalid.iterator().next().getPropertyPath().toString());
+
+        // T37
+        // Invalid case QuantityInStock == string
+        // This test case is not applicable in Java as quantityInStock is of type Integer
+
+        // T38
+        // Invalid case QuantityInStock == null
+        Product productWithNullQuantity = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            null,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_invalid2 = validator.validate(productWithNullQuantity);
+        // Assert
+        System.err.println(violations_invalid2);
+        assertEquals("quantityInStock", violations_invalid2.iterator().next().getPropertyPath().toString());
+    }
+
+    @Test
+    public void testProductStatus() {
+        // T39
+        // Valid case ProductStatus == IN_STOCK
+        Product productInStock = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_valid = validator.validate(productInStock);
+        // Assert
+        System.err.println(violations_valid);
+        assertTrue(violations_valid.isEmpty());
+        when(productRepository.save(productInStock)).thenReturn(productInStock);
+        Product savedProduct = productService.save(productInStock);
+        assertEquals(productInStock, savedProduct);
+
+        // T40
+        // Valid case ProductStatus == OUT_OF_STOCK
+        Product productOutOfStock = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.OUT_OF_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_valid2 = validator.validate(productOutOfStock);
+        // Assert
+        System.err.println(violations_valid2);
+        assertTrue(violations_valid2.isEmpty());
+        when(productRepository.save(productOutOfStock)).thenReturn(productOutOfStock);
+        Product savedProduct2 = productService.save(productOutOfStock);
+        assertEquals(productOutOfStock, savedProduct2);
+
+        // T41
+        // Valid case ProductStatus == PREORDER
+        Product productPreorder = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.PREORDER,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_valid3 = validator.validate(productPreorder);
+        // Assert
+        System.err.println(violations_valid3);
+        assertTrue(violations_valid3.isEmpty());
+        when(productRepository.save(productPreorder)).thenReturn(productPreorder);
+        Product savedProduct3 = productService.save(productPreorder);
+        assertEquals(productPreorder, savedProduct3);
+
+        // T42
+        // Valid case ProductStatus == DISCONTINUED
+        Product productDiscontinued = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.DISCONTINUED,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_valid4 = validator.validate(productDiscontinued);
+        // Assert
+        System.err.println(violations_valid4);
+        assertTrue(violations_valid4.isEmpty());
+        when(productRepository.save(productDiscontinued)).thenReturn(productDiscontinued);
+        Product savedProduct4 = productService.save(productDiscontinued);
+        assertEquals(productDiscontinued, savedProduct4);
+
+        // T43
+        // Invalid case ProductStatus == string
+        // This test case is not applicable in Java as ProductStatus is of type Enum
+
+        // T44
+        // Invalid case ProductStatus == null
+        Product productNull = createProductSample(1L, "Valid Title", null, null, 1, 1, null, BigDecimal.TEN, null, null, Instant.now());
+        Set<ConstraintViolation<Product>> violations_invalid = validator.validate(productNull);
+        // Assert
+        System.err.println(violations_invalid);
+        assertEquals("status", violations_invalid.iterator().next().getPropertyPath().toString());
+    }
+
+    @Test
+    public void testWeight() {
+        // T45
+        // Valid case Weight == null
+        Product productNullWeight = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_valid = validator.validate(productNullWeight);
+        // Assert
+        System.err.println(violations_valid);
+        assertTrue(violations_valid.isEmpty());
+        when(productRepository.save(productNullWeight)).thenReturn(productNullWeight);
+        Product savedProduct = productService.save(productNullWeight);
+        assertEquals(productNullWeight, savedProduct);
+
+        // T46
+        // Valid case Weight == 0
+        Product productZeroWeight = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            0.0,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_valid2 = validator.validate(productZeroWeight);
+        // Assert
+        System.err.println(violations_valid2);
+        assertTrue(violations_valid2.isEmpty());
+        when(productRepository.save(productZeroWeight)).thenReturn(productZeroWeight);
+        Product savedProduct2 = productService.save(productZeroWeight);
+        assertEquals(productZeroWeight, savedProduct2);
+
+        // T47
+        // Valid case Weight == 2
+        Product productWeight2 = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            2.0,
+            Instant.now()
+        );
+
+        Set<ConstraintViolation<Product>> violations_valid3 = validator.validate(productWeight2);
+        // Assert
+        System.err.println(violations_valid3);
+        assertTrue(violations_valid3.isEmpty());
+        when(productRepository.save(productWeight2)).thenReturn(productWeight2);
+        Product savedProduct3 = productService.save(productWeight2);
+        assertEquals(productWeight2, savedProduct3);
+
+        // T48
+        // Valid case Weight == 5.5
+        Product productWeight5_5 = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            5.5,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_valid4 = validator.validate(productWeight5_5);
+        // Assert
+        System.err.println(violations_valid4);
+        assertTrue(violations_valid4.isEmpty());
+        when(productRepository.save(productWeight5_5)).thenReturn(productWeight5_5);
+        Product savedProduct4 = productService.save(productWeight5_5);
+        assertEquals(productWeight5_5, savedProduct4);
+
+        // T49
+        // Invalid case Weight == -0.1
+        Product productNegativeWeight = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            -0.1,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_invalid = validator.validate(productNegativeWeight);
+        // Assert
+        System.err.println(violations_invalid);
+        assertEquals("weight", violations_invalid.iterator().next().getPropertyPath().toString());
+        // T50
+        // Invalid case Weight == string
+        // This test case is not applicable in Java as weight is of type Double
+    }
+
+    @Test
+    public void testDimensions() {
+        // T51
+        // Valid case Dimensions == null
+        Product productNullDimensions = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_valid = validator.validate(productNullDimensions);
+        // Assert
+        System.err.println(violations_valid);
+        assertTrue(violations_valid.isEmpty());
+        when(productRepository.save(productNullDimensions)).thenReturn(productNullDimensions);
+        Product savedProduct = productService.save(productNullDimensions);
+        assertEquals(productNullDimensions, savedProduct);
+
+        // T52
+        // Valid case Dimensions == 0 char (empty)
+        Product productEmptyDimensions = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            1,
+            "",
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_valid2 = validator.validate(productEmptyDimensions);
+        // Assert
+        System.err.println(violations_valid2);
+        assertTrue(violations_valid2.isEmpty());
+        when(productRepository.save(productEmptyDimensions)).thenReturn(productEmptyDimensions);
+        Product savedProduct2 = productService.save(productEmptyDimensions);
+        assertEquals(productEmptyDimensions, savedProduct2);
+
+        // T53
+        // Valid case Dimensions == valid string
+        Product productValidDimensions = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            1,
+            "100cm, 50cm, 70cm",
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_valid3 = validator.validate(productValidDimensions);
+        // Assert
+        System.err.println(violations_valid3);
+        assertTrue(violations_valid3.isEmpty());
+        when(productRepository.save(productValidDimensions)).thenReturn(productValidDimensions);
+        Product savedProduct3 = productService.save(productValidDimensions);
+        assertEquals(productValidDimensions, savedProduct3);
+
+        // T54
+        // Invalid case Dimensions > 50 char
+        Product productOver50CharDimensions = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            1,
+            "a".repeat(51),
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_invalid = validator.validate(productOver50CharDimensions);
+        // Assert
+        System.err.println(violations_invalid);
+        assertEquals("dimensions", violations_invalid.iterator().next().getPropertyPath().toString());
     }
 }
