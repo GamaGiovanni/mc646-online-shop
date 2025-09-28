@@ -1155,4 +1155,223 @@ public class ProductServiceTest {
         System.err.println(violations_invalid);
         assertEquals("dimensions", violations_invalid.iterator().next().getPropertyPath().toString());
     }
+
+    @Test
+    public void testAditionDate() {
+        // T55
+        // Valid case AdditionDate == now
+        Product productWithNowDate = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_valid = validator.validate(productWithNowDate);
+        // Assert
+        System.err.println(violations_valid);
+        assertTrue(violations_valid.isEmpty());
+        when(productRepository.save(productWithNowDate)).thenReturn(productWithNowDate);
+        Product savedProduct = productService.save(productWithNowDate);
+        assertEquals(productWithNowDate, savedProduct);
+
+        // T56
+        // Invalid case AdditionDate == null
+        Product productWithNullDate = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            null
+        );
+        Set<ConstraintViolation<Product>> violations_invalid = validator.validate(productWithNullDate);
+        // Assert
+        System.err.println(violations_invalid);
+        assertEquals("dateAdded", violations_invalid.iterator().next().getPropertyPath().toString());
+
+        // T57
+        // Invalid case AdditionDate == 60s future date
+        Product productWithFutureDate = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now().plusSeconds(3600)
+        );
+        Set<ConstraintViolation<Product>> violations_invalid2 = validator.validate(productWithFutureDate);
+        // Assert
+        System.err.println(violations_invalid2);
+        assertEquals("dateAdded", violations_invalid2.iterator().next().getPropertyPath().toString());
+
+        // T58
+        // Invalid case AdditionDate == far future date
+        Product productWithFarFutureDate = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.parse("3000-01-01T00:00:00Z")
+        );
+        Set<ConstraintViolation<Product>> violations_invalid3 = validator.validate(productWithFarFutureDate);
+        // Assert
+        System.err.println(violations_invalid3);
+        assertEquals("dateAdded", violations_invalid3.iterator().next().getPropertyPath().toString());
+
+        // T59
+        // Invalid case AdditionDate == epoch
+        Product productWithEpochDate = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.EPOCH
+        );
+        Set<ConstraintViolation<Product>> violations_invalid4 = validator.validate(productWithEpochDate);
+        // Assert
+        System.err.println(violations_invalid4);
+        assertEquals("dateAdded", violations_invalid4.iterator().next().getPropertyPath().toString());
+    }
+
+    @Test
+    public void testModifiedDate() {
+        // T60
+        // Valid case ModifiedDate == null
+        Product productWithNullDate = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_valid = validator.validate(productWithNullDate);
+        // Assert
+        System.err.println(violations_valid);
+        assertTrue(violations_valid.isEmpty());
+        when(productRepository.save(productWithNullDate)).thenReturn(productWithNullDate);
+        Product savedProduct = productService.save(productWithNullDate);
+        assertEquals(productWithNullDate, savedProduct);
+
+        // T61
+        // Valid case ModifiedDate == now
+        Product productWithNowDate = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        productWithNowDate.setDateModified(Instant.now());
+        Set<ConstraintViolation<Product>> violations_valid2 = validator.validate(productWithNowDate);
+        // Assert
+        System.err.println(violations_valid2);
+        assertTrue(violations_valid2.isEmpty());
+        when(productRepository.save(productWithNowDate)).thenReturn(productWithNowDate);
+        Product savedProduct2 = productService.save(productWithNowDate);
+        assertEquals(productWithNowDate, savedProduct2);
+
+        // T62
+        // Invalid case ModifiedDate == 60s past date
+        Product productWithPastDate = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        productWithPastDate.setDateModified(Instant.now().minusSeconds(60));
+        Set<ConstraintViolation<Product>> violations_invalid = validator.validate(productWithPastDate);
+        // Assert
+        System.err.println(violations_invalid);
+        assertEquals("dateModified", violations_invalid.iterator().next().getPropertyPath().toString());
+
+        // T63
+        // Invalid case ModifiedDate == far future date
+        Product productWithFarFutureDate = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        productWithFarFutureDate.setDateModified(Instant.parse("3000-01-01T00:00:00Z"));
+        Set<ConstraintViolation<Product>> violations_invalid2 = validator.validate(productWithFarFutureDate);
+        // Assert
+        System.err.println(violations_invalid2);
+        assertEquals("dateModified", violations_invalid2.iterator().next().getPropertyPath().toString());
+
+        // T64
+        // Invalid case ModifiedDate == epoch
+        Product productWithEpochDate = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        productWithEpochDate.setDateModified(Instant.EPOCH);
+        Set<ConstraintViolation<Product>> violations_invalid3 = validator.validate(productWithEpochDate);
+        // Assert
+        System.err.println(violations_invalid3);
+        assertEquals("dateModified", violations_invalid3.iterator().next().getPropertyPath().toString());
+    }
 }
