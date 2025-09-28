@@ -292,4 +292,137 @@ public class ProductServiceTest {
         // Assert
         assertEquals("keywords", violations_invalid.iterator().next().getPropertyPath().toString());
     }
+
+    @Test
+    public void testDescription() {
+        // T11
+        // Valid case Description == null
+        Product productWithNullDescription = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_valid = validator.validate(productWithNullDescription);
+        // Assert
+        System.err.println(violations_valid);
+        assertTrue(violations_valid.isEmpty());
+        when(productRepository.save(productWithNullDescription)).thenReturn(productWithNullDescription);
+        Product savedProduct = productService.save(productWithNullDescription);
+        assertEquals(productWithNullDescription, savedProduct);
+
+        // T12
+        // Valid case Description == 0 char (empty)
+        Product productWithEmptyDescription = createProductSample(
+            1L,
+            "Valid Title",
+            "",
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_valid2 = validator.validate(productWithEmptyDescription);
+        // Assert
+        System.err.println(violations_valid2);
+        assertTrue(violations_valid2.isEmpty());
+        when(productRepository.save(productWithEmptyDescription)).thenReturn(productWithEmptyDescription);
+        Product savedProduct2 = productService.save(productWithEmptyDescription);
+        assertEquals(productWithEmptyDescription, savedProduct2);
+
+        // T13
+        // Valid case Description == 50 char
+        Product productWith50CharDescription = createProductSample(
+            1L,
+            "Valid Title",
+            "a".repeat(50),
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_valid3 = validator.validate(productWith50CharDescription);
+        // Assert
+        System.err.println(violations_valid3);
+        assertTrue(violations_valid3.isEmpty());
+        when(productRepository.save(productWith50CharDescription)).thenReturn(productWith50CharDescription);
+        Product savedProduct3 = productService.save(productWith50CharDescription);
+        assertEquals(productWith50CharDescription, savedProduct3);
+
+        // T14
+        // Valid case Description > 50 char
+        Product productWithOver50CharDescription = createProductSample(
+            1L,
+            "Valid Title",
+            "a".repeat(51),
+            null,
+            1,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_valid4 = validator.validate(productWithOver50CharDescription);
+        // Assert
+        System.err.println(violations_valid4);
+        assertTrue(violations_valid4.isEmpty());
+        when(productRepository.save(productWithOver50CharDescription)).thenReturn(productWithOver50CharDescription);
+        Product savedProduct4 = productService.save(productWithOver50CharDescription);
+        assertEquals(productWithOver50CharDescription, savedProduct4);
+
+        // T15
+        // Invalid case Description < 50 char
+        Product productWith49CharDescription = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            "a".repeat(49),
+            1,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_invalid = validator.validate(productWith49CharDescription);
+        // Assert
+        assertEquals("description", violations_invalid.iterator().next().getPropertyPath().toString());
+
+        // T16
+        // Invalid case Description == 1 char
+        Product productWith1CharDescription = createProductSample(
+            1L,
+            "Valid Title",
+            null,
+            "a",
+            1,
+            1,
+            null,
+            BigDecimal.TEN,
+            ProductStatus.IN_STOCK,
+            null,
+            Instant.now()
+        );
+        Set<ConstraintViolation<Product>> violations_invalid2 = validator.validate(productWith1CharDescription);
+        // Assert
+        assertEquals("description", violations_invalid2.iterator().next().getPropertyPath().toString());
+    }
 }
